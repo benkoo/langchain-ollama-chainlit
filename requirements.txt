@@ -5,3 +5,5 @@ PyPDF2
 pypdf
 chromadb
 langchainhub
+groq
+python-dotenv

@@ -13,10 +13,10 @@ from langchain.chains import RetrievalQA
 ABS_PATH: str = os.path.dirname(os.path.abspath(__file__))
 DB_DIR: str = os.path.join(ABS_PATH, "db")
 
-
 # Set up RetrievelQA model
 rag_prompt_mistral = hub.pull("rlm/rag-prompt-mistral")
 
+print(rag_prompt_mistral)
 
 def load_model():
     llm = Ollama(

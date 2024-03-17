@@ -17,6 +17,15 @@ from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 
 import chainlit as cl
 
+from langchain.prompts.chat import (
+    ChatPromptTemplate,
+    SystemMessagePromptTemplate,
+    HumanMessagePromptTemplate,
+)
+
+embedding_model="nomic-embed-text"
+chat_model_name="mistral"
+
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
 
 
@@ -29,7 +38,7 @@ async def on_chat_start():
         files = await cl.AskFileMessage(
             content="Please upload a pdf file to begin!",
             accept=["application/pdf"],
-            max_size_mb=20,
+            max_size_mb=50,
             timeout=180,
         ).send()
 
@@ -55,12 +64,13 @@ async def on_chat_start():
     metadatas = [{"source": f"{i}-pl"} for i in range(len(texts))]
 
     # Create a Chroma vector store
-    embeddings = OllamaEmbeddings(model="mistral")
+    embeddings = OllamaEmbeddings(model=embedding_model)
     docsearch = await cl.make_async(Chroma.from_texts)(
         texts, embeddings, metadatas=metadatas
     )
 
     message_history = ChatMessageHistory()
+
 
     memory = ConversationBufferMemory(
         memory_key="chat_history",
@@ -71,7 +81,7 @@ async def on_chat_start():
 
     # Create a chain that uses the Chroma vector store
     chain = ConversationalRetrievalChain.from_llm(
-        ChatOllama(model="mistral"),
+        ChatOllama(model=chat_model_name),
         chain_type="stuff",
         retriever=docsearch.as_retriever(),
         memory=memory,
