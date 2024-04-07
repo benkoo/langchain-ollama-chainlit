@@ -3,18 +3,18 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
 from langchain.schema.runnable import Runnable
 from langchain.schema.runnable.config import RunnableConfig
-
 import chainlit as cl
 
 
 @cl.on_chat_start
 async def on_chat_start():
     model = Ollama(model="mistral")
+    # model = chat_completion  
     prompt = ChatPromptTemplate.from_messages(
         [
             (
                 "system",
-                "You're a very knowledgeable historian who provides accurate and eloquent answers to historical questions. I will answer all questions in Traiditional Chinese",
+                "You're a very knowledgeable historian who provides accurate and eloquent answers to historical questions. I will answer all questions in Traditional Chinese",
             ),
             ("human", "{question}"),
         ]

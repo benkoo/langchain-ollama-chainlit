@@ -160,4 +160,5 @@ cython_debug/
 
 # Vector Database related 
 db/
+db/*.*
 .files/

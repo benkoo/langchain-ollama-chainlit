@@ -10,26 +10,6 @@ async def main():
             author='J_ChATBOT2'
         ).send()
 
-    # files = None
-    
-    # while files == None:
-    #     files = await cl.AskFileMessage(
-    #         content="Please upload a text file to begin!",
-    #         accept=["text/plain", ".md"]
-    #     ).send()
-        
-    # text_file = files[0]
-    # print(text_file.path)
-    # file_path = text_file.path
-    # contents = []
-    # with open(file_path, 'r') as file:
-    #     contents = file.read()
-    
-    # text = contents
-    
-    # await cl.Message(
-    #     content=f"`{text_file.name}` uploaded, it contains {len(text)} characters."
-    # ).send()    
     
     res = await cl.AskActionMessage(
        content="Are you satisfied with the answer? Once you click YES or NO. You can continue asking",

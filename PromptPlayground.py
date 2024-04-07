@@ -1,11 +1,12 @@
 from openai import AsyncOpenAI
+from src.llm import ask_doctor, messages
 
 from chainlit.playground.providers import ChatOpenAI
 import chainlit as cl
 import os
-import dotenv
+from dotenv import load_dotenv
 
-dotenv.load_dotenv() 
+load_dotenv() 
 
 from groq import Groq
 
@@ -45,14 +46,14 @@ async def call_llm():
     )
 
     # Make the call to OpenAI
-    response = clientG.chat.completions.create(
+    response = client.chat.completions.create(
         messages=generation.messages,
-        model="mixtral-8x7b-32768",
+        model="gpt-4",
         #**settings
     )
 
     generation.message_completion = {
-        "content": response.choices[0].message.content,
+        "content": "If you don't know the answer, just give up",
         "role": "assistant"
     }
 
@@ -65,3 +66,17 @@ async def call_llm():
 @cl.on_chat_start
 async def start():
     await call_llm()
+
+
+
+@cl.on_message
+async def main(message: cl.Message):
+    # Your custom logic goes here...
+    messages.append({"role": "user", "content": message.content})
+    response = ask_doctor(messages)
+    messages.append({"role": "assistant", "content": response})
+
+    # Send a response back to the user
+    await cl.Message(
+        content =response,
+    ).send()
