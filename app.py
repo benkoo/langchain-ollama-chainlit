@@ -1,31 +1,26 @@
+import json
 import chainlit as cl
+from chainlit.input_widget import Select, Switch, Slider
 
+async def load_settings_from_file(filename):
+    with open(filename, 'r') as file:
+        data = json.load(file)
+        return data['settings']
 
 @cl.on_chat_start
-async def main():
-    res = await cl.AskUserMessage(content="What is your name?", timeout=30, author="J_ChATBOT").send()
-    if res:
-        await cl.Message(
-            content=f"Hello {res['output']}! You are watching Chainlit Tutorial!",
-            author='J_ChATBOT2'
-        ).send()
+async def start():
+    settings_config = await load_settings_from_file('src/settings.json')
+    settings_objects = []
+    for item in settings_config:
+        item_type = item['type'].lower()  # Ensure type is in lowercase
+        if item_type == 'select':
+            settings_objects.append(Select(**item))
+        elif item_type == 'switch':
+            settings_objects.append(Switch(**item))
+        elif item_type == 'slider':
+            settings_objects.append(Slider(**item))
+    settings = await cl.ChatSettings(settings_objects).send()
 
-    
-    res = await cl.AskActionMessage(
-       content="Are you satisfied with the answer? Once you click YES or NO. You can continue asking",
-       actions=[
-           cl.Action(name="YES", value="YES", lable="YES!!!"),
-           cl.Action(name="NO", value="NO", label="NO !!!!!")
-       ]
-    ).send()
-
-    if res and res.get("value") == "continue":
-        await cl.Message(
-           content="Continue",
-        ).send()
-
-    # text_content = text
-    # elements = [
-    #     cl.Text(name="TEXT ELEMENT!!", content=text_content, display="inline")
-    # ]
-    # await cl.Message(content="Check out this text element!", elements=elements).send()
+@cl.on_settings_update
+async def setup_agent(settings):
+    print("on_settings_update", settings)
